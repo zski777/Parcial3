@@ -1,0 +1,49 @@
+{
+  "dev": {
+    "app_function": "lambda_scraper.download_html",
+    "aws_region": "us-east-1",
+    "profile_name": "default",
+    "project_name": "headlines-scraper",
+    "runtime": "python3.10",
+    "s3_bucket": "zappa-headlines-noticias",
+    "manage_roles": false,
+    "role_name": "LabRole",
+    "apigateway_enabled": false,
+    "keep_warm": false,
+    "events": [
+      {
+        "function": "lambda_scraper.download_html",
+        "expression": "cron(0 9 * * ? *)"
+      }
+    ]
+  },
+  "dev2": {
+    "app_function": "lambda_parser.lambda_handler",
+    "aws_region": "us-east-1",
+    "profile_name": "default",
+    "project_name": "headlines-parser",
+    "runtime": "python3.10",
+    "s3_bucket": "zappa-headlines-noticias",
+    "manage_roles": false,
+    "role_name": "LabRole",
+    "apigateway_enabled": false,
+    "keep_warm": false,
+    "events": [
+      {
+        "function": "lambda_parser.lambda_handler",
+        "event_source": {
+          "arn": "arn:aws:s3:::zappa-headlines-noticias",
+          "events": ["s3:ObjectCreated:*"],
+          "filters": [
+            {
+              "Key": {
+                "Prefix": "headlines/raw/",
+                "Suffix": ".html"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
