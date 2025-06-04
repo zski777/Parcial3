@@ -41,5 +41,5 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}  
         run: |
-          source env/bin/activate && zappa update dev
-          source env/bin/activate && zappa update dev2
+          source env/bin/activate && zappa deploy dev
+          source env/bin/activate && zappa deploy dev2
