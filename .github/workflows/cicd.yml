@@ -1,0 +1,45 @@
+name: CI/CD AWS Lambda
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"  
+
+      - name: Instalar dependencias
+        run: |
+          pip install -r requirements.txt
+    
+      - name: Crear y activar entorno virtual
+        run: |
+          python3.9 -m venv env
+          source env/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install setuptools==65.5.0 wheel
+          pip install zappa
+
+          
+      - name: Desplegar en AWS con Zappa
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}  
+        run: |
+          source env/bin/activate && zappa update dev
+          source env/bin/activate && zappa update dev2
